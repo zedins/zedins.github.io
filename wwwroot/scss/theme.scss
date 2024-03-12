@@ -1,0 +1,102 @@
+@use "sass:color";
+
+/*
+:root {
+  --page-background: white;
+
+  --searchForm-background: white;
+  --searchForm-border: gray;
+
+  --searchInput-border: #e5e5e5;
+  --searchInput-border-hover: #a1a1a1;
+
+  --searchSubmit-background: #5b9a8b;
+  --searchSubmit-background-hover: #78b0a2;
+  --searchSubmit-border: red;
+  --searchSubmit-border-hover: blue;
+
+  --searchAdvanced-background: #f3f3f3;
+  --searchAdvanced-border: black;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-background: #666;
+
+    --searchForm-border: red;
+
+    --searchSubmit-background: gray;
+    --searchSubmit-border: gray;
+
+    --searchAdvanced-background: #f3f3f3;
+    --searchAdvanced-border: black;
+  }
+}
+*/
+
+$palette-map: (
+  light: (
+    global: (
+      background: #ffffff,
+    ),
+    sazePanel: (
+      background: #f6f6f6,
+      border: #eeeeee,
+      footer: #fefefe,
+    ),
+    search: (
+      background: #f0f0f0,
+      border: #888888,
+      button: red,
+      color: white,
+    ),
+    searchAdvanced: (
+      background: #f0f0f0,
+    ),
+    product: (
+      border: #eeeeee,
+      color: #222222,
+      details: #888888,
+    ),
+  ),
+  dark: (
+    global: (
+      background: #222222,
+    ),
+    sazePanel: (
+      background: #777777,
+      border: #000000,
+      footer: #666666,
+    ),
+    search: (
+      background: #111111,
+      border: #000000,
+      button: red,
+      color: white,
+    ),
+    product: (
+      border: #666666,
+      color: violet,
+      details: #888888,
+    ),
+  ),
+);
+
+/*
+$palette-map: (
+  background: (
+    light: #ffffff,
+    dark: #000000,
+  ),
+  sazePanel: (
+    background: (
+      light: #fefefe,
+      dark: #777777,
+    ),
+    border: (
+      green,
+      blue,
+    ),
+  ),
+);
+*/

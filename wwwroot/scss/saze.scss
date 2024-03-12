@@ -1,0 +1,330 @@
+@use "sass:map";
+@use "theme" as *;
+
+$base-size: 1rem;
+$base-size-2: calc($base-size * 2);
+$base-size-3: calc($base-size * 3);
+
+$base-size-half: calc($base-size / 2);
+$base-size-quarter: calc($base-size / 4);
+
+$layers-map: (
+  "background": -10,
+  "default": 1000,
+  "hover": 1010,
+  "dropdown": 1020,
+  "sticky": 1030,
+  "fixed": 1040,
+  "popover": 1080,
+  "tooltip": 1090,
+  "backdrop": 2010,
+  "modal": 2020,
+);
+
+$breakpoints-map: (
+  xxs: 360px,
+  xs: 480px,
+  s: 600px,
+  m: 768px,
+  l: 1024px,
+  xl: 1280px,
+  xxl: 1080px,
+);
+
+/// Position creating a new rendering layer with relative positioning
+/// @group Mixins
+/// @name layer()
+/// @example @include layer(sticky);
+@mixin layer($name: "default", $positioning: true, $layers: $layers-map) {
+  @if map-has-key($layers, $name) {
+    @if $positioning {
+      position: relative;
+    }
+
+    z-index: map.get($layers, $name);
+  } @else {
+    @error 'The specified layer ' + $name + ' does not exist!';
+  }
+}
+
+/// Usage for setting z-index only
+/// @group Mixins
+/// @name layer()
+/// @example z-index: layer(hover);
+@function layer($name: "default", $layers: $layers-map) {
+  @if map-has-key($layers, $name) {
+    @return map-get($layers, $name);
+  }
+
+  @error 'The specified layer ' + $name + ' does not exist!';
+}
+
+/// Respond for higher media queries
+/// @group Mixins
+/// @name respond-above()
+/// @example @include respond-above(s);
+@mixin respond-above($breakpoint, $breakpoints: $breakpoints-map) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @error 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+
+@mixin responsive-variable(
+  $property,
+  $mapped-x,
+  $breakpoints: $breakpoints-map
+) {
+  @each $breakpoint, $v in $mapped-x {
+    @if map-has-key($breakpoints, $breakpoint) {
+      @media (min-width: map-get($breakpoints, $breakpoint)) {
+        #{$property}: #{$v};
+      }
+    } @else {
+      #{$property}: #{$v};
+    }
+  }
+}
+
+@mixin invisible {
+  clip: rect(0 0 0 0);
+  display: none;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  width: 0;
+}
+
+@function applyTheme($component, $prop, $palette: $palette-map) {
+  @return map-get($palette, light, $component, $prop);
+}
+
+@mixin sazeButton($isDropdown: false) {
+  align-items: center;
+  display: flex;
+  position: relative;
+
+  button {
+    background-color: lighten(applyTheme(search, button), 10%);
+    border: 1px solid darken(applyTheme(search, button), 10%);
+    color: applyTheme(search, color);
+    flex: 1;
+    font-size: 0.78rem;
+    min-height: 100%;
+    padding: 6px 18px;
+
+    &:hover {
+      background-color: darken(applyTheme(search, button), 5%);
+      cursor: pointer;
+    }
+  }
+
+  @if ($isDropdown) {
+    .chevron {
+      align-items: stretch;
+      background-color: darken(applyTheme(search, button), 10%);
+      border: 1px solid darken(applyTheme(search, button), 10%);
+      display: flex;
+      min-height: 100%;
+
+      input[type="checkbox"] {
+        @include invisible;
+
+        &:checked + label {
+          transform: rotate(180deg);
+        }
+      }
+
+      label {
+        align-items: center;
+        display: flex;
+        padding: 6px;
+
+        svg {
+          fill: applyTheme(search, color);
+        }
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      &:has(input[type="checkbox"]:checked) + .dropdown {
+        background-color: applyTheme(sazePanel, background);
+        border: 1px solid black;
+        display: block;
+        min-width: 100%;
+        padding: 12px;
+        position: absolute;
+        right: 0;
+        top: 100%;
+      }
+    }
+
+    .dropdown {
+      display: none;
+    }
+  }
+}
+
+@mixin sazePanel(
+  $useBorder: false,
+  $useHover: false,
+  $useHeader: false,
+  $useFooter: false
+) {
+  $borderSize: if($useBorder, 1px, 0px);
+  $borderColor: if($useBorder, applyTheme(sazePanel, border), transparent);
+
+  border: $borderSize solid $borderColor;
+  display: flex;
+  flex-direction: column;
+
+  @if ($useHover) {
+    &:hover {
+      border-color: black;
+    }
+  }
+
+  @if ($useHeader) {
+    .header {
+      // min-height: 24px;
+    }
+  }
+
+  .body {
+    // padding: 6px;
+  }
+
+  @if ($useFooter) {
+    .footer {
+      background-color: applyTheme(sazePanel, footer);
+    }
+  }
+}
+
+@mixin sazeProductCard() {
+  border: 1px solid applyTheme(product, border);
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 6px;
+  position: relative;
+
+  &:hover {
+    border-color: darken(applyTheme(product, border), 10%);
+  }
+
+  // &:after {
+  //   content: "";
+  //   inset: 0;
+  //   position: absolute;
+  // }
+
+  .imgWrapper {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    margin: 1rem;
+
+    &:before {
+      content: "";
+      display: block;
+      padding-top: 100%;
+    }
+
+    img {
+      height: 50%;
+      margin: 1rem;
+      max-height: 100%;
+      max-width: 100%;
+      min-width: 50%;
+      object-fit: contain;
+      position: absolute;
+      width: 50%;
+
+      // filter: grayscale(50%);
+    }
+  }
+
+  .infoWrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h4 {
+      font-size: 0.66rem;
+      font-weight: 400;
+      line-height: 1.25rem;
+      margin-bottom: 0;
+    }
+
+    h3 {
+      font-size: 0.8rem;
+      font-weight: 400;
+      line-height: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .details {
+      color: applyTheme(product, details);
+      font-size: 0.72rem;
+      margin-bottom: 1rem;
+      word-break: break-word;
+
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
+    .prices {
+      margin-bottom: 1rem;
+
+      .info {
+        font-size: 0.6rem;
+      }
+
+      .regular {
+        font-size: 0.72rem;
+        font-weight: 400;
+        letter-spacing: 0.025rem;
+        line-height: 1.25rem;
+      }
+
+      .action {
+        color: red;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.025rem;
+        line-height: 1.5rem;
+      }
+
+      .loyalty {
+        color: darken(red, 10%);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.025rem;
+        line-height: 1.5rem;
+      }
+    }
+
+    .availability {
+      color: #767676;
+      font-size: 0.66rem;
+      word-break: break-all;
+    }
+  }
+
+  .xWrapper {
+    border: 1px solid green;
+    font-size: 0.5rem;
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+  }
+}

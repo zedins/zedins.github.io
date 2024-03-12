@@ -1,0 +1,148 @@
+@use "saze" as *;
+@use "theme" as *;
+
+html,
+body {
+  background-color: applyTheme(global, background);
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif !important;
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  min-width: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+ol,
+ul {
+  list-style: none inside none;
+  margin: 0;
+  padding: 0;
+}
+
+$product-min-width-map: (
+  0: 6rem,
+  xxs: 8rem,
+  xs: 9rem,
+  l: 10rem,
+);
+
+.searchForm {
+  background-color: applyTheme(search, background);
+  padding: 12px 0;
+  position: relative;
+
+  .simpleSearch {
+    @include sazePanel();
+
+    margin-inline: auto;
+    max-width: 960px;
+
+    .body {
+      display: flex;
+
+      input[type="search"] {
+        border: 1px solid applyTheme(search, border);
+        flex: 1;
+        outline: none;
+        padding: 12px;
+      }
+
+      .searchSubmit {
+        @include sazeButton($isDropdown: true);
+
+        .dropdown {
+          z-index: layer(modal);
+        }
+        .dropdown p {
+          display: flex;
+        }
+      }
+    }
+
+    .footer {
+      font-size: 0.6rem;
+      padding: 6px;
+    }
+
+    &:not(:has(input[type="checkbox"]:checked)) + .advancedSearch {
+      @include invisible;
+    }
+  }
+
+  .advancedSearch {
+    @include sazePanel($useBorder: true, $useHover: true);
+    @include layer();
+
+    background-color: darken(applyTheme(searchAdvanced, background), 5%);
+    height: auto;
+    left: 0;
+    margin-inline: auto;
+    max-width: 960px;
+    position: absolute;
+    right: 0;
+    top: calc(100% - 12px);
+
+    .body {
+      display: flex;
+
+      > div:first-of-type {
+        //flex: 1
+      }
+
+      > div {
+        padding: 6px
+      }
+    }
+  }
+}
+
+.searchResults {
+  @include sazePanel();
+
+  margin-inline: auto;
+  max-width: 960px;
+  padding-top: 2rem;
+
+  .shopResults {
+    @include sazePanel;
+
+    .body {
+      display: grid;
+      grid-auto-flow: dense;
+      grid-gap: 0.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+
+      .shopProduct {
+        @include sazeProductCard;
+      }
+
+      .separator {
+        align-items: center;
+        background-color: #eeeeee;
+        display: flex;
+        font-size: 0.72rem;
+        grid-column: 1 / -1;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        padding: 6px;
+      }
+    }
+  }
+}
